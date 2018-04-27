@@ -1,0 +1,5 @@
+config:
+    paths:
+        'oroconsent/js/app/views/base-consent-item-view': 'bundles/oroconsent/js/app/views/base-consent-item-view.js'
+        'oroconsent/js/app/views/consents-group-view': 'bundles/oroconsent/js/app/views/consents-group-view.js'
+        'oroconsent/js/app/widget/consent-dialog-widget': 'bundles/oroconsent/js/app/widget/consent-dialog-widget.js'

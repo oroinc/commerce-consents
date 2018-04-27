@@ -1,0 +1,2 @@
+imports:
+    - { resource: 'workflows/b2b_flow_checkout_with_consents.yml' }

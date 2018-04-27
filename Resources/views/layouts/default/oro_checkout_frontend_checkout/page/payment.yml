@@ -1,0 +1,8 @@
+layout:
+    actions:
+        - '@setOption':
+            id: checkout_information_title
+            optionName: stepOrder
+            optionValue: 5
+
+    conditions: 'context["workflowStepName"]=="enter_payment"'

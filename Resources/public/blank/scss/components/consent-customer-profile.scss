@@ -1,0 +1,43 @@
+// @theme: blank;
+
+.customer-profile {
+    &__container {
+        display: $customer-profile-container-display;
+    }
+
+    &__consents {
+        padding: $customer-profile-consents-offset-inner;
+        width: $customer-profile-consents-width;
+        border-top: $customer-profile-consents-border-top;
+    }
+
+    //TODO: Should refactor in BB-13929
+    .info-list {
+        width: $customer-profile-info-list-width;
+
+        &__name:after {
+            margin-left: $customer-profile-info-list-name-after-offset-left;
+            position: $customer-profile-info-list-name-after-position;
+        }
+    }
+}
+
+@include breakpoint('mobile-big') {
+    .customer-profile {
+        &__container {
+            display: $customer-profile-container-mobile-big-display;
+        }
+
+        &__consents {
+            border-top: $customer-profile-consents-mobile-big-border-top;
+        }
+    }
+}
+
+@include breakpoint('mobile') {
+    .customer-profile {
+        &__consents {
+            padding: $customer-profile-consents-mobile-offset-inner;
+        }
+    }
+}

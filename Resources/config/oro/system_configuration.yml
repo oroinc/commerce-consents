@@ -1,0 +1,48 @@
+system_configuration:
+    groups:
+        consents:
+            title: oro.consent.system_configuration.groups.consents.title
+            icon: 'fa-check-square'
+        enabled_consents:
+            title: oro.consent.system_configuration.groups.enabled_consents.title
+
+    fields:
+        oro_consent.consent_feature_enabled:
+            data_type: boolean
+            type: oro_config_checkbox
+            priority: 20
+            page_reload: true
+            options:
+                required: false
+                label: oro.consent.system_configuration.fields.consent.feature_enabled.label
+        oro_consent.enabled_consents:
+            data_type: array
+            type: oro_consent_collection
+            options:
+                required: false
+                label: oro.consent.system_configuration.fields.consent.enabled_consents.label
+
+    tree:
+        system_configuration:
+            commerce:
+                children:
+                    customer:
+                        children:
+                            consents:
+                                children:
+                                    consents:
+                                        children:
+                                            - oro_consent.consent_feature_enabled
+                                    enabled_consents:
+                                        children:
+                                            - oro_consent.enabled_consents
+        website_configuration:
+            commerce:
+                children:
+                    customer:
+                        children:
+                            consents:
+                                children:
+                                    enabled_consents:
+                                        children:
+                                            - oro_consent.enabled_consents

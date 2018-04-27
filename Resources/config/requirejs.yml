@@ -1,0 +1,6 @@
+#TODO: make these js files abstract and reuse it in consent and price list controls
+config:
+    paths:
+        'oroconsent/js/app/views/consent-entity-tree-select-form': 'bundles/oroconsent/js/app/views/consent-entity-tree-select-form.js'
+        'oroconsent/js/app/views/consent-update-content-nodes-view': 'bundles/oroconsent/js/app/views/consent-update-content-nodes-view.js'
+        'oroconsent/js/app/views/consent-drag-n-drop-sorting': 'bundles/oroconsent/js/app/views/consent-drag-n-drop-sorting.js'

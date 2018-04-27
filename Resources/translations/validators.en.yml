@@ -1,0 +1,6 @@
+oro:
+    consent:
+        validators:
+            consent:
+                unique_consent.message: 'Consent is duplicated.'
+                required_consents.message: 'To proceed further you must accept all required consents: ({{ consent_names }})!'

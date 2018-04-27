@@ -1,0 +1,297 @@
+workflows:
+    b2b_flow_checkout_with_consents:
+        transitions:
+            __start__:
+                step_to: customer_consents
+
+            start_from_shoppinglist:
+                step_to: customer_consents
+                is_start: true
+                is_unavailable_hidden: true
+                transition_definition: start_from_shoppinglist_definition
+                frontend_options:
+                    icon: fa-briefcase
+                    data:
+                      component_name: oro_shopping_list_matrix_to_create_order
+                      page-component-module: oroshoppinglist/js/app/components/shoppinglist-create-order-button-component
+                      page-component-options:
+                          component_name: '[name$="[component]"]'
+                          hasEmptyMatrix: $.result.shoppingListHasEmptyMatrix
+                form_options:
+                    form_init:
+                        - '@generate_checkout_state_snapshot':
+                            entity: $checkout
+                            attribute: $.result.initCheckoutState
+                init_routes:
+                    - oro_shopping_list_frontend_view
+                acl_resource: [CHECKOUT_CREATE, $.result.shoppingList]
+
+            start_from_quickorderform:
+                step_to: customer_consents
+                is_start: true
+                is_unavailable_hidden: true
+                transition_definition: start_from_quickorderform_definition
+                frontend_options:
+                    icon: fa-clipboard
+                    data:
+                        component_name: oro_shopping_list_to_checkout_quick_add_processor
+                        page-component-module: oroproduct/js/app/components/quick-add-form-button-component
+                        page-component-options:
+                            component_name: '[name$="[component]"]'
+                            confirmation: $.result.isReachedLimit
+                            shopping_list_limit: $.result.shoppingListLimit
+                form_options:
+                    form_init:
+                        - '@generate_checkout_state_snapshot':
+                            entity: $checkout
+                            attribute: $.result.initCheckoutState
+                init_routes:
+                    - oro_product_frontend_quick_add
+                    - oro_product_frontend_quick_add_copy_paste
+                    - oro_product_frontend_quick_add_import
+                acl_resource: [CREATE, entity:commerce@Oro\Bundle\CheckoutBundle\Entity\Checkout]
+
+            continue_to_billing_address:
+                step_to: enter_billing_address
+                transition_definition: continue_to_billing_address_definition
+                display_type: page
+                frontend_options:
+                    is_checkout_continue: true
+                    is_checkout_show_errors: true
+                form_type: oro_customer_consents_transition_type
+                form_options:
+                    form_init:
+                        - '@generate_checkout_state_snapshot':
+                            entity: $checkout
+                            attribute: $.result.initCheckoutState
+                    attribute_fields:
+                        customerConsents:
+                            form_type: oro_checkout_customer_consents
+                            options:
+                                customerUser: $checkout.customerUser
+                                constraints:
+                                    - Oro\Bundle\ConsentBundle\Validator\Constraints\RequiredConsents: ~
+                        state_token:
+                            form_type: hidden
+                            options:
+                                data: $internal_state_token
+
+            back_to_customer_consents:
+                step_to: customer_consents
+                transition_definition: back_to_customer_consents_definition
+                is_unavailable_hidden: true
+                frontend_options:
+                    is_checkout_back: true
+
+            finish_checkout:
+                step_to: order_created
+
+            payment_error:
+                step_to: enter_payment
+
+            continue_to_shipping_address:
+                step_to: enter_shipping_address
+                transition_definition: continue_to_shipping_address_definition
+                display_type: page
+                frontend_options:
+                    is_checkout_continue: true
+                    is_checkout_show_errors: true
+                form_options:
+                    form_init:
+                        - '@generate_checkout_state_snapshot':
+                            entity: $checkout
+                            attribute: $.result.initCheckoutState
+                    attribute_fields:
+                        billing_address:
+                            form_type: oro_checkout_address
+                            options:
+                                object: $checkout
+                                isEditEnabled: true
+                                addressType: 'billing'
+                                required: true
+                                translation_domain: messages
+                                constraints:
+                                    - Valid: ~
+                                    - NotBlank: ~
+                                    - Oro\Bundle\AddressBundle\Validator\Constraints\NameOrOrganization: ~
+                                disabled: $disallow_billing_address_edit
+                        save_billing_address:
+                            form_type: oro_save_address
+                            options:
+                        ship_to_billing_address:
+                            form_type: oro_ship_to_billing_address
+                            options:
+                        state_token:
+                            form_type: hidden
+                            options:
+                                data: $internal_state_token
+                        visitor_email:
+                            form_type: oro_customer_visitor_email_address
+
+            continue_to_shipping_method:
+                step_to: enter_shipping_method
+                transition_definition: continue_to_shipping_method_definition
+                display_type: page
+                frontend_options:
+                    is_checkout_continue: true
+                    is_checkout_show_errors: true
+                form_options:
+                    form_init:
+                        - '@generate_checkout_state_snapshot':
+                            entity: $checkout
+                            attribute: $.result.initCheckoutState
+                    attribute_fields:
+                        shipping_address:
+                            form_type: oro_checkout_address
+                            options:
+                                object: $checkout
+                                isEditEnabled: true
+                                addressType: 'shipping'
+                                required: true
+                                disabled: $disallow_shipping_address_edit
+                                translation_domain: messages
+                                constraints:
+                                    - Valid: ~
+                                    - NotBlank: ~
+                                    - Oro\Bundle\AddressBundle\Validator\Constraints\NameOrOrganization: ~
+                        save_shipping_address:
+                            form_type: oro_save_address
+                            options:
+                        ship_to_billing_address:
+                            form_type: oro_ship_to_billing_address
+                            options:
+                        state_token:
+                            form_type: hidden
+                            options:
+                                data: $internal_state_token
+
+            continue_to_payment:
+                step_to: enter_payment
+                transition_definition: continue_to_payment_definition
+                frontend_options:
+                    is_checkout_continue: true
+                    is_checkout_show_errors: true
+                    page_component_module: 'orocheckout/js/app/components/shipping-transition-button-component'
+                form_options:
+                    form_init:
+                        - '@generate_checkout_state_snapshot':
+                            entity: $checkout
+                            attribute: $.result.initCheckoutState
+                        - '@call_service_method':
+                            service: oro_checkout.action.default_shipping_method_setter
+                            method: setDefaultShippingMethod
+                            method_parameters: [$checkout]
+                    attribute_fields:
+                        shipping_method:
+                            options:
+                                constraints:
+                                    - NotBlank: ~
+                        shipping_method_type:
+                            options:
+                                constraints:
+                                    - NotBlank: ~
+                        state_token:
+                            form_type: hidden
+                            options:
+                                data: $internal_state_token
+
+            continue_to_order_review:
+                step_to: order_review
+                transition_definition: continue_to_order_review_definition
+                frontend_options:
+                    is_checkout_continue: true
+                    is_checkout_show_errors: true
+                    page_component_module: 'orocheckout/js/app/components/payment-transition-button-component'
+                form_options:
+                    form_init:
+                        - '@assign_value': [$payment_validate, true]
+                        - '@call_service_method':
+                            service: oro_payment.provider.payment_transaction
+                            method: getActiveValidatePaymentTransaction
+                            method_parameters: [$payment_method]
+                            attribute: $.result.validatePaymentTransaction
+                        - '@assign_value':
+                            conditions:
+                                '@not_empty': [$.result.validatePaymentTransaction]
+                            parameters: [$payment_validate, false]
+                        - '@generate_checkout_state_snapshot':
+                            entity: $checkout
+                            attribute: $.result.initCheckoutState
+                    attribute_fields:
+                        payment_method: ~
+                        payment_validate:
+                            form_type: checkbox
+                        payment_save_for_later:
+                            form_type: checkbox
+                        state_token:
+                            form_type: hidden
+                            options:
+                                data: $internal_state_token
+                        additional_data:
+                            form_type: hidden
+
+            back_to_billing_address:
+                step_to: enter_billing_address
+                transition_definition: clear_payment_method_and_recalculate_state_definition
+                is_unavailable_hidden: true
+                frontend_options:
+                    is_checkout_back: true
+
+            back_to_shipping_address:
+                step_to: enter_shipping_address
+                transition_definition: clear_payment_method_and_recalculate_state_definition
+                is_unavailable_hidden: true
+                frontend_options:
+                    is_checkout_back: true
+
+            back_to_shipping_address_on_fail_address:
+                step_to: enter_shipping_address
+                transition_definition: unblock_and_recalculate_definition
+                is_hidden: true
+
+            back_to_shipping_method:
+                step_to: enter_shipping_method
+                transition_definition: clear_payment_method_and_recalculate_state_definition
+                is_unavailable_hidden: true
+                frontend_options:
+                    is_checkout_back: true
+
+            back_to_payment:
+                step_to: enter_payment
+                transition_definition: recalculate_state_definition
+                is_unavailable_hidden: true
+                frontend_options:
+                    is_checkout_back: true
+
+            verify_payment:
+                step_to: enter_payment
+                transition_definition: verify_payment_definition
+                is_hidden: true
+                frontend_options:
+                    is_checkout_verify: true
+
+            place_order:
+                step_to: order_review
+                transition_definition: place_order_definition
+                display_type: page
+                frontend_options:
+                    is_checkout_continue: true
+                    is_checkout_show_errors: true
+                form_options:
+                    form_init:
+                        - '@generate_checkout_state_snapshot':
+                            entity: $checkout
+                            attribute: $.result.initCheckoutState
+                    attribute_fields:
+                        remove_source: ~
+                        po_number: ~
+                        ship_until:
+                            form_type: oro_checkout_ship_until
+                            options:
+                                checkout: $checkout
+                        customer_notes:
+                            form_type: textarea
+                        state_token:
+                            form_type: hidden
+                            options:
+                                data: $internal_state_token

@@ -1,0 +1,3 @@
+oro_consent_web_catalog_tree_api:
+    resource: "@OroConsentBundle/Controller/Api/Rest/WebCatalogTreeController.php"
+    type:     rest

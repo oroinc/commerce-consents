@@ -1,0 +1,30 @@
+workflows:
+    b2b_flow_checkout_with_consents:
+        transition_definitions:
+            __start___definition:
+                actions:
+                    - '@assign_value': [$shipping_method, null]
+                    - '@assign_value': [$payment_save_for_later, true]
+
+                    - '@generate_checkout_state_snapshot':
+                        entity: $checkout
+                        attribute: $.result.startCheckoutState
+                    - '@save_checkout_state':
+                        entity: $checkout
+                        state: $.result.startCheckoutState
+                        attribute: $state_token
+                    - '@assign_value': [$internal_state_token, $state_token]
+
+            unblock_and_recalculate_definition:
+                actions:
+                    - '@assign_value': [$payment_method, null]
+                    - '@assign_value': [$payment_in_progress, false]
+
+                    - '@generate_checkout_state_snapshot':
+                        entity: $checkout
+                        attribute: $.result.actualCheckoutState
+                    - '@save_checkout_state':
+                        entity: $checkout
+                        state: $.result.actualCheckoutState
+                        attribute: $state_token
+                    - '@assign_value': [$internal_state_token, $state_token]

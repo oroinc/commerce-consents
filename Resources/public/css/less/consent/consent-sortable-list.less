@@ -1,0 +1,32 @@
+//TODO: Should refactor in BB-13929
+.consent-sortable-list {
+  width: 400px;
+
+  &__wrapper {
+    &.disabled {
+      .removeRow {
+        pointer-events: none;
+      }
+    }
+  }
+
+  &__column {
+    width: 315px;
+  }
+
+  .table-bordered {
+    display: block;
+  }
+
+  .grid-container {
+    margin-bottom: 12px;
+  }
+
+  .sortable-wrapper .removeRow {
+    margin-left: -45px;
+  }
+
+  .ui-sortable-helper .removeRow {
+      margin: 0 8px 0 -13px;
+  }
+}
