@@ -92,6 +92,20 @@ class CheckoutHasUnacceptedConsentsTest extends \PHPUnit_Framework_TestCase
         ];
     }
 
+    public function testEvaluateNoCustomerUser()
+    {
+        $checkout = $this->createMock(Checkout::class);
+        $checkout->expects($this->once())
+            ->method('getCustomerUser')
+            ->willReturn(null);
+
+        $this->consentDataProvider->expects($this->never())
+            ->method('getNotAcceptedRequiredConsentData');
+
+        $this->condition->initialize(['checkout' => $checkout]);
+        $this->assertEquals(true, $this->condition->evaluate([]));
+    }
+
     public function testToArray()
     {
         $stdClass = new \stdClass();

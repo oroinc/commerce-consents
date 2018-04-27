@@ -147,7 +147,9 @@ class ConsentContextProvider implements ConsentContextProviderInterface
             if ($request && $request->attributes->has('_web_content_scope')) {
                 $this->scope = $request->attributes->get('_web_content_scope');
             }
-        } else {
+        }
+
+        if (!($this->scope instanceof Scope)) {
             $criteria = $this->scopeManager->getCriteria('web_content');
             $criteriaContext = $criteria->toArray();
             $consentContext = $this->getRewrittenWebContentCriteriaContext($criteriaContext);

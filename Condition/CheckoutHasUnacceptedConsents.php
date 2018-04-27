@@ -75,10 +75,15 @@ class CheckoutHasUnacceptedConsents extends AbstractCondition implements Context
             return false;
         }
 
+        $customerUser = $checkout->getCustomerUser();
+
+        // In case of guest user checkout we can't get not accepted consents, so always return true
+        if (!$customerUser) {
+            return true;
+        }
+
         return !empty(
-            $this->consentDataProvider->getNotAcceptedRequiredConsentData(
-                $checkout->getCustomerUser()
-            )
+            $this->consentDataProvider->getNotAcceptedRequiredConsentData($customerUser)
         );
     }
 
