@@ -2,6 +2,7 @@
 
 namespace Oro\Bundle\ConsentBundle\Form\DataTransformer;
 
+use Oro\Bundle\ConsentBundle\SystemConfig\ConsentConfig;
 use Oro\Bundle\ConsentBundle\SystemConfig\ConsentConfigConverter;
 use Symfony\Component\Form\DataTransformerInterface;
 
@@ -43,6 +44,12 @@ class ConsentCollectionTransformer implements DataTransformerInterface
      */
     public function reverseTransform($value)
     {
+        $value = array_filter(
+            $value,
+            function (ConsentConfig $consentConfig) {
+                return $consentConfig->getConsent() !== null;
+            }
+        );
         return $this->converter->convertBeforeSave($value);
     }
 }

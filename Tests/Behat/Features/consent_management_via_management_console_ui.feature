@@ -114,7 +114,7 @@ Feature: Consent management via Management Console UI
     And fill "Consent Settings Form" with:
       | Enabled User Consents Use Default | false |
     And click "Save settings"
-    Then I should see "This value should not be blank."
+    Then I should see "Configuration saved" flash message
     And I choose Consent "Presenting Personal Data" in 1 row
     Then click "Add Consent"
     And I choose Consent "Email Newsletters" in 2 row

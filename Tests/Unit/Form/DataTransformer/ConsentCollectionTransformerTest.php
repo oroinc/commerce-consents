@@ -123,6 +123,18 @@ class ConsentCollectionTransformerTest extends \PHPUnit_Framework_TestCase
                 'input' => [],
                 'output' => [],
             ],
+            'data with empty entries' => [
+                'input' => [
+                    new ConsentConfig(null, 1),
+                    new ConsentConfig($consent34, 2)
+                ],
+                'output' => [
+                    [
+                        'consent' => 34,
+                        'sort_order' => 2,
+                    ]
+                ]
+            ],
             'full data' => [
                 'input' => [
                     new ConsentConfig($consent34, 2),

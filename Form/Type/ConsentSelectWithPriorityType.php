@@ -31,7 +31,6 @@ class ConsentSelectWithPriorityType extends AbstractType
                     'required' => true,
                     'label' => 'oro.consent.entity_label',
                     'create_enabled' => false,
-                    'constraints' => [new NotBlank()],
                 ]
             );
     }
