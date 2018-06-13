@@ -10,6 +10,8 @@ use Oro\Bundle\ConsentBundle\Form\Extension\FrontendRfqExtension;
 use Oro\Bundle\ConsentBundle\Form\Type\CustomerConsentsType;
 use Oro\Bundle\ConsentBundle\Helper\ConsentContextInitializeHelperInterface;
 use Oro\Bundle\ConsentBundle\Validator\Constraints\RequiredConsents;
+use Oro\Bundle\ConsentBundle\Validator\Constraints\RemovedConsents;
+use Oro\Bundle\ConsentBundle\Validator\Constraints\RemovedLandingPages;
 use Oro\Bundle\CustomerBundle\Entity\CustomerUser;
 use Oro\Bundle\CustomerBundle\Security\Token\AnonymousCustomerUserToken;
 use Oro\Bundle\FeatureToggleBundle\Checker\FeatureChecker;
@@ -141,7 +143,11 @@ class FrontendRfqExtensionTest extends FormIntegrationTestCase
                 CustomerConsentsType::TARGET_FIELDNAME,
                 CustomerConsentsType::class,
                 [
-                    'constraints' => [new RequiredConsents()]
+                    'constraints' => [
+                        new RemovedLandingPages(),
+                        new RemovedConsents(),
+                        new RequiredConsents()
+                    ]
                 ]
             );
 
@@ -175,7 +181,11 @@ class FrontendRfqExtensionTest extends FormIntegrationTestCase
                 CustomerConsentsType::TARGET_FIELDNAME,
                 CustomerConsentsType::class,
                 [
-                    'constraints' => [new RequiredConsents()]
+                    'constraints' => [
+                        new RemovedLandingPages(),
+                        new RemovedConsents(),
+                        new RequiredConsents()
+                    ]
                 ]
             );
 

@@ -58,6 +58,10 @@ class ConsentConfigConverter
             ->getManagerForClass(Consent::class)
             ->getRepository(Consent::class);
 
+        if (empty($consentIds)) {
+            return [];
+        }
+
         /** @var Consent[] $consents */
         $consents = $repository->findBy(['id' => $consentIds]);
         $configs = array_combine($consentIds, $configs);

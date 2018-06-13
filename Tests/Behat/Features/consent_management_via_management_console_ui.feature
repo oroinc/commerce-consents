@@ -7,8 +7,8 @@ Feature: Consent management via Management Console UI
 
   Scenario: Create two sessions
     Given sessions active:
-      | Admin | first_session  |
-      | User  | second_session |
+      | Admin                   | first_session  |
+      | User                    | second_session |
 
   Scenario: Create Landing Page and Content Node in Web Catalog
     Given I proceed as the Admin
@@ -336,3 +336,110 @@ Feature: Consent management via Management Console UI
     Then I should see "Configuration saved" flash message
     And I should see that "Email Newsletters" is in 1 row
     And I should see that "Collecting and storing personal data" is in 2 row
+
+  Scenario: When User submit registration form with removed consent, it should see validation error
+    Given I proceed as the Admin
+    Then I go to System/ Consent Management
+    And click "Create Consent"
+    And fill "Consent Form" with:
+      | Name | Consent on remove |
+      | Type | Mandatory         |
+    And I save and close form
+    Then should see "Consent has been created" flash message
+    And go to System/ Websites
+    And click "Configuration" on row "Default" in grid
+    Then follow "Commerce/Customer/Consents" on configuration sidebar
+    Then click "Add Consent"
+    And I choose Consent "Consent on remove" in 4 row
+    Then click "Save settings"
+    Given I proceed as the User
+    Then I click "Sign Out"
+    And I am on the homepage
+    And click "Register"
+    Then I should see 3 elements "Required Consent"
+    Then I fill form with:
+      | Company Name                         | OroCommerce              |
+      | First Name                           | Amanda                   |
+      | Last Name                            | Cole                     |
+      | Email Address                        | AmandaRCole2@example.org |
+      | Password                             | AmandaRCole2@example.org |
+      | Confirm Password                     | AmandaRCole2@example.org |
+      | Consent on remove                    | true                     |
+    And I click "Presenting Personal Data"
+    And click "Accept"
+    Then I click "Collecting and storing personal data"
+    And click "Accept"
+    Given I proceed as the Admin
+    Then I go to System/ Consent Management
+    And I click view "Consent on remove" in grid
+    When I click "Delete"
+    Then I should see "Are you sure you want to delete this consent?"
+    And I click "Yes, Delete"
+    Then should see "Consent deleted" flash message
+    Given I proceed as the User
+    When press "Create An Account"
+    Then I should see "Some consents were changed. Please reload the page."
+
+  Scenario: When User submit registration form with removed landing page, it should see validation error
+    Given I proceed as the Admin
+    Then go to Marketing/ Landing Pages
+    And click "Create Landing Page"
+    And fill "Landing Page Form" with:
+      | Titles   | Consent Landing on remove |
+      | URL Slug | consent-landing-on-remove |
+    And I fill in "CMS Page Content" with "Consent landing page description"
+    And click "Save and Close"
+    Then go to Marketing/ Web Catalogs
+    And click view "Store and Process" in grid
+    And I click "Edit Content Tree"
+    And I click "Create Content Node"
+    And I click on "Show Variants Dropdown"
+    And I click "Add Landing Page"
+    And I fill "Content Node Form" with:
+      | Titles       | Landing page on remove node      |
+      | Url Slug     | consent-landing-on-remove-node   |
+      | Landing Page | Consent Landing on remove        |
+    And I save form
+    Then I should see "Content Node has been saved" flash message
+    Then I go to System/ Consent Management
+    And click "Create Consent"
+    And fill "Consent Form" with:
+      | Name        | Consent with landing page on remove |
+      | Type        | Mandatory                           |
+      | Web Catalog | Store and Process                   |
+    And I click "Landing page on remove node"
+    And I save and close form
+    Then should see "Consent has been created" flash message
+    Then go to System/ Websites
+    And click "Configuration" on row "Default" in grid
+    Then follow "Commerce/Customer/Consents" on configuration sidebar
+    Then click "Add Consent"
+    And I choose Consent "Consent with landing page on remove" in 4 row
+    Then click "Save settings"
+    Given I proceed as the User
+    And I am on the homepage
+    And click "Register"
+    Then I should see 3 elements "Required Consent"
+    Then I fill form with:
+      | Company Name                         | OroCommerce              |
+      | First Name                           | Amanda                   |
+      | Last Name                            | Cole                     |
+      | Email Address                        | AmandaRCole3@example.org |
+      | Password                             | AmandaRCole3@example.org |
+      | Confirm Password                     | AmandaRCole3@example.org |
+    And I click "Presenting Personal Data"
+    And click "Accept"
+    Then I click "Collecting and storing personal data"
+    And click "Accept"
+    And I click "Consent with landing page on remove"
+    And click "Accept"
+    Given I proceed as the Admin
+    And go to Marketing/ Landing Pages
+    And click view "Consent Landing on remove" in grid
+    When I click "Delete"
+    Then I should see "Are you sure you want to delete this Landing Page?"
+    And I click "Yes, Delete"
+    Then should see "Landing Page deleted" flash message
+    Given I proceed as the User
+    When press "Create An Account"
+    Then I should see "Some consents were changed. Please reload the page."

@@ -170,7 +170,8 @@ class ConsentContextProvider implements ConsentContextProviderInterface
     private function getRewrittenWebContentCriteriaContext(array $criteriaContext)
     {
         $criteriaContext['website'] = $this->website;
-        $criteriaContext['customer'] = $this->customerUser->getCustomer();
+        $criteriaContext['customer'] = $this->customerUser instanceof CustomerUser ?
+            $this->customerUser->getCustomer() : null;
         $criteriaContext['customerGroup'] = $this->customerUserRelationsProvider->getCustomerGroup($this->customerUser);
 
         return $criteriaContext;

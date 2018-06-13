@@ -8,6 +8,8 @@ use Oro\Bundle\ConsentBundle\Form\EventSubscriber\GuestCustomerConsentsEventSubs
 use Oro\Bundle\ConsentBundle\Form\EventSubscriber\PopulateFieldCustomerConsentsSubscriber;
 use Oro\Bundle\ConsentBundle\Form\Type\CustomerConsentsType;
 use Oro\Bundle\ConsentBundle\Helper\ConsentContextInitializeHelperInterface;
+use Oro\Bundle\ConsentBundle\Validator\Constraints\RemovedConsents;
+use Oro\Bundle\ConsentBundle\Validator\Constraints\RemovedLandingPages;
 use Oro\Bundle\ConsentBundle\Validator\Constraints\RequiredConsents;
 use Oro\Bundle\CustomerBundle\Security\Token\AnonymousCustomerUserToken;
 use Oro\Bundle\FeatureToggleBundle\Checker\FeatureCheckerHolderTrait;
@@ -92,7 +94,11 @@ class FrontendRfqExtension extends AbstractTypeExtension implements FeatureToggl
             CustomerConsentsType::TARGET_FIELDNAME,
             CustomerConsentsType::class,
             [
-                'constraints' => [new RequiredConsents()]
+                'constraints' => [
+                    new RemovedLandingPages(),
+                    new RemovedConsents(),
+                    new RequiredConsents()
+                ]
             ]
         );
     }

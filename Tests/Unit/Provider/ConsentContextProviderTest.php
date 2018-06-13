@@ -4,6 +4,7 @@ namespace Oro\Bundle\ConsentBundle\Tests\Unit\Provider;
 
 use Oro\Bundle\ConsentBundle\Provider\ConsentContextProvider;
 use Oro\Bundle\CustomerBundle\Entity\Customer;
+use Oro\Bundle\CustomerBundle\Entity\CustomerGroup;
 use Oro\Bundle\CustomerBundle\Entity\CustomerUser;
 use Oro\Bundle\CustomerBundle\Provider\CustomerUserRelationsProvider;
 use Oro\Bundle\FrontendBundle\Request\FrontendHelper;
@@ -102,6 +103,64 @@ class ConsentContextProviderTest extends \PHPUnit_Framework_TestCase
             ->willReturn($request);
 
         $this->provider->initializeContext($website);
+
+        $this->assertSame(
+            $contentScope,
+            $this->provider->getScope()
+        );
+    }
+
+    public function testFrontendRequestInitializeScopeWithoutContentScope()
+    {
+        $customer = $this->getEntity(Customer::class, ['id' => 1]);
+        $customerUser = $this->getEntity(CustomerUser::class, [
+            'id' => 1,
+            'customer' => $customer
+        ]);
+        $customerGroup = $this->getEntity(CustomerGroup::class, ['id' => 1]);
+        /** @var Scope $contentScope */
+        $contentScope = $this->getEntity(Scope::class, ['id' => 123]);
+        /** @var Website $website */
+        $website = $this->getEntity(Website::class, ['id' => 1]);
+
+        $request = new Request();
+
+        $this->frontendHelper->expects($this->any())
+            ->method('isFrontendRequest')
+            ->willReturn(true);
+
+        $this->requestStack->expects($this->any())
+            ->method('getCurrentRequest')
+            ->willReturn($request);
+
+        $this->scopeManager
+            ->method('getCriteria')
+            ->willReturnCallback(function ($scopeType, $context) {
+                if (null === $context) {
+                    $context = [];
+                }
+                return new ScopeCriteria($context, []);
+            });
+
+        $this->customerUserRelationsProvider
+            ->expects($this->once())
+            ->method('getCustomerGroup')
+            ->with($customerUser)
+            ->willReturn($customerGroup);
+
+        $expectedScopeCriteria = new ScopeCriteria([
+            'website' => $website,
+            'customer' => $customer,
+            'customerGroup' => $customerGroup
+        ], []);
+
+        $this->slugRepository
+            ->expects($this->once())
+            ->method('findMostSuitableUsedScope')
+            ->with($expectedScopeCriteria)
+            ->willReturn($contentScope);
+
+        $this->provider->initializeContext($website, $customerUser);
 
         $this->assertSame(
             $contentScope,

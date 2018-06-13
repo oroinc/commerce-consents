@@ -16,7 +16,7 @@ use Oro\Bundle\UserBundle\Entity\Ownership\AuditableUserAwareTrait;
 use Oro\Bundle\WebCatalogBundle\Entity\ContentNode;
 
 /**
- * @ORM\Entity
+ * @ORM\Entity(repositoryClass="Oro\Bundle\ConsentBundle\Entity\Repository\ConsentRepository")
  * @ORM\Table(
  *     name="oro_consent",
  *     indexes={@ORM\Index(name="consent_created_idx",columns={"created_at"})}

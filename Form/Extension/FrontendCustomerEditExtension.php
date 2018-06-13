@@ -6,6 +6,8 @@ use Oro\Bundle\ConsentBundle\Form\EventSubscriber\CustomerConsentsEventSubscribe
 use Oro\Bundle\ConsentBundle\Form\EventSubscriber\FillConsentContextEventSubscriber;
 use Oro\Bundle\ConsentBundle\Form\EventSubscriber\PopulateFieldCustomerConsentsSubscriber;
 use Oro\Bundle\ConsentBundle\Form\Type\CustomerConsentsType;
+use Oro\Bundle\ConsentBundle\Validator\Constraints\RemovedConsents;
+use Oro\Bundle\ConsentBundle\Validator\Constraints\RemovedLandingPages;
 use Oro\Bundle\CustomerBundle\Entity\CustomerUser;
 use Oro\Bundle\FeatureToggleBundle\Checker\FeatureCheckerHolderTrait;
 use Oro\Bundle\FeatureToggleBundle\Checker\FeatureToggleableInterface;
@@ -90,7 +92,13 @@ class FrontendCustomerEditExtension extends AbstractTypeExtension implements Fea
         if ($customerUser instanceof CustomerUser && $customerUser === $this->getCustomerUser()) {
             $event->getForm()->add(
                 CustomerConsentsType::TARGET_FIELDNAME,
-                CustomerConsentsType::class
+                CustomerConsentsType::class,
+                [
+                    'constraints' => [
+                        new RemovedLandingPages(),
+                        new RemovedConsents()
+                    ]
+                ]
             );
         }
     }

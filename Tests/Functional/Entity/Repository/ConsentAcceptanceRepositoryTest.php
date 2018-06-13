@@ -35,6 +35,14 @@ class ConsentAcceptanceRepositoryTest extends WebTestCase
             ->getEntityRepositoryForClass(ConsentAcceptance::class);
     }
 
+    /**
+     * {@inheritdoc}
+     */
+    protected function tearDown()
+    {
+        unset($this->repository);
+    }
+
     public function testGetAcceptedConsentsByCustomer()
     {
         $customerUser = $this->getReference(LoadCustomerUserData::EMAIL);

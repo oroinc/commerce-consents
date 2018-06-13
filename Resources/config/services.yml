@@ -171,6 +171,20 @@ services:
         tags:
             - { name: validator.constraint_validator, alias: oro_consent.validator.required_consents }
 
+    oro_consent.validator.removed_consents:
+        class: 'Oro\Bundle\ConsentBundle\Validator\Constraints\RemovedConsentsValidator'
+        arguments:
+            - '@oro_entity.doctrine_helper'
+        tags:
+            - { name: validator.constraint_validator, alias: oro_consent_removed_consents_validator }
+
+    oro_consent.validator.removed_landing_pages:
+        class: 'Oro\Bundle\ConsentBundle\Validator\Constraints\RemovedLandingPagesValidator'
+        arguments:
+            - '@oro_entity.doctrine_helper'
+        tags:
+            - { name: validator.constraint_validator, alias: oro_consent_removed_landing_pages_validator }
+
     oro_consent.event_listener.customer_user_entity_listener:
         class: 'Oro\Bundle\ConsentBundle\EventListener\CustomerUserEntityListener'
         arguments:
