@@ -21,18 +21,9 @@ workflows:
                         attribute: $.result.isCheckoutAllowed
                 preconditions:
                     '@and':
-                        - '@not_empty': $init_context
                         - '@equal': [true, $.result.isAllowed]
                         - '@equal': [true, $.result.isCheckoutAllowed]
                 actions:
-                    - '@run_action_group':
-                        action_group: start_shoppinglist_checkout
-                        parameters_mapping:
-                            shoppingList: $.result.shoppingList
-                            showErrors: true
-                        results:
-                            data.checkout: $.checkout
-                            result.redirectUrl: $.redirectUrl
                     - '@tree':
                         conditions:
                             '@and':

@@ -4,6 +4,7 @@ workflows:
             customer_consents:
                 order: 5
                 allowed_transitions:
+                    - start_from_quickorderform
                     - continue_to_billing_address
             enter_billing_address:
                 order: 10

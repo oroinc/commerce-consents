@@ -5,4 +5,4 @@ layout:
             optionName: stepOrder
             optionValue: 6
 
-    conditions: 'context["workflowStepName"]=="order_review" && !context["widget_container"]'
+    conditions: 'context["workflowName"]=="b2b_flow_checkout_with_consents" && context["workflowStepName"]=="order_review" && !context["widget_container"]'
