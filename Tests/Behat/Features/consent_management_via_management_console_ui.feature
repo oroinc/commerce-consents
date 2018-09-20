@@ -147,7 +147,7 @@ Feature: Consent management via Management Console UI
       | Email Address                        | AmandaRCole1@example.org |
       | Password                             | AmandaRCole1@example.org |
       | Confirm Password                     | AmandaRCole1@example.org |
-    And press "Create An Account"
+    And click "Create An Account"
     Then I should see that "Required Consent" contains "This agreement is required"
     And I click "Presenting Personal Data"
     Then I should see "UiDialog" with elements:
@@ -162,7 +162,7 @@ Feature: Consent management via Management Console UI
     And the "Presenting Personal Data" checkbox should be checked
     And the "Email Newsletters" checkbox should not be checked
     And the "Collecting and storing personal data" checkbox should be checked
-    When press "Create An Account"
+    When click "Create An Account"
     Then I should see "Please check your email to complete registration" flash message
 
   Scenario: Confirmation of new user which have accepted consents
@@ -377,7 +377,7 @@ Feature: Consent management via Management Console UI
     And I click "Yes, Delete"
     Then should see "Consent deleted" flash message
     Given I proceed as the User
-    When press "Create An Account"
+    When click "Create An Account"
     Then I should see "Some consents were changed. Please reload the page."
 
   Scenario: When User submit registration form with removed landing page, it should see validation error
@@ -441,5 +441,5 @@ Feature: Consent management via Management Console UI
     And I click "Yes, Delete"
     Then should see "Landing Page deleted" flash message
     Given I proceed as the User
-    When press "Create An Account"
+    When click "Create An Account"
     Then I should see "Some consents were changed. Please reload the page."
