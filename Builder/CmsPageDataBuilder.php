@@ -8,6 +8,7 @@ use Oro\Bundle\ConsentBundle\Entity\ConsentAcceptance;
 use Oro\Bundle\ConsentBundle\Helper\CmsPageHelper;
 use Oro\Bundle\ConsentBundle\Model\CmsPageData;
 use Oro\Bundle\LocaleBundle\Helper\LocalizationHelper;
+use Oro\Bundle\RedirectBundle\Generator\CanonicalUrlGenerator;
 use Oro\Bundle\RedirectBundle\Provider\RoutingInformationProviderInterface;
 use Symfony\Component\Routing\RouterInterface;
 
@@ -28,6 +29,9 @@ class CmsPageDataBuilder
     /** @var RouterInterface */
     protected $router;
 
+    /** @var CanonicalUrlGenerator */
+    private $canonicalUrlGenerator;
+
     /**
      * @param CmsPageHelper $cmsPageHelper
      * @param LocalizationHelper $localizationHelper
@@ -44,6 +48,14 @@ class CmsPageDataBuilder
         $this->localizationHelper = $localizationHelper;
         $this->routingInformationProvider = $routingInformationProvider;
         $this->router = $router;
+    }
+
+    /**
+     * @param CanonicalUrlGenerator $canonicalUrlGenerator
+     */
+    public function setCanonicalUrlGenerator(CanonicalUrlGenerator $canonicalUrlGenerator)
+    {
+        $this->canonicalUrlGenerator = $canonicalUrlGenerator;
     }
 
     /**
@@ -86,7 +98,8 @@ class CmsPageDataBuilder
             );
         } else {
             $localizedUrls = $consent->getContentNode()->getLocalizedUrls();
-            $url = (string) $this->localizationHelper->getLocalizedValue($localizedUrls);
+            $localizedFallbackValue = $this->localizationHelper->getLocalizedValue($localizedUrls);
+            $url = $this->canonicalUrlGenerator->getAbsoluteUrl($localizedFallbackValue);
         }
 
         $cmsPageData = new CmsPageData();

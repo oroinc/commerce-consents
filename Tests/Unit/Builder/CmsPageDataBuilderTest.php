@@ -12,6 +12,7 @@ use Oro\Bundle\ConsentBundle\Helper\CmsPageHelper;
 use Oro\Bundle\ConsentBundle\Model\CmsPageData;
 use Oro\Bundle\LocaleBundle\Entity\LocalizedFallbackValue;
 use Oro\Bundle\LocaleBundle\Helper\LocalizationHelper;
+use Oro\Bundle\RedirectBundle\Generator\CanonicalUrlGenerator;
 use Oro\Bundle\RedirectBundle\Provider\RoutingInformationProviderInterface;
 use Oro\Bundle\WebCatalogBundle\Entity\ContentNode;
 use Oro\Component\Routing\RouteData;
@@ -31,6 +32,9 @@ class CmsPageDataBuilderTest extends \PHPUnit_Framework_TestCase
     /** @var CmsPageDataBuilder */
     private $builder;
 
+    /** @var CanonicalUrlGenerator|\PHPUnit_Framework_MockObject_MockObject */
+    private $canonicalUrlGenerator;
+
     /**
      * {@inheritdoc}
      */
@@ -43,7 +47,7 @@ class CmsPageDataBuilderTest extends \PHPUnit_Framework_TestCase
         $localizationHelper->expects($this->any())
             ->method('getLocalizedValue')
             ->will($this->returnCallback(function (Collection $collection) {
-                return $collection->first()->getString();
+                return $collection->first();
             }));
 
         /**
@@ -63,6 +67,9 @@ class CmsPageDataBuilderTest extends \PHPUnit_Framework_TestCase
             $routingInformationProvider,
             $this->router
         );
+
+        $this->canonicalUrlGenerator = $this->createMock(CanonicalUrlGenerator::class);
+        $this->builder->setCanonicalUrlGenerator($this->canonicalUrlGenerator);
     }
 
     /**
@@ -146,15 +153,6 @@ class CmsPageDataBuilderTest extends \PHPUnit_Framework_TestCase
                 'routerUrl' => '/cms-page-url-from-content-acceptance',
                 'expected' => null
             ],
-            "Consent acceptance isn't set and cms page exists" => [
-                'consent' => $consent,
-                'consentAcceptance' => null,
-                'cmsPage' => $this->getEntity(Page::class, ['id' => $consentAcceptanceCmsPageId]),
-                'routerUrl' => '/cms-page-url-from-content-acceptance',
-                'expected' => (new CmsPageData())
-                    ->setId($consentAcceptanceCmsPageId)
-                    ->setUrl('/cms-page-url-from-content-node')
-            ],
             "Consent acceptance isn't set and cms page doesn't exist" => [
                 'consent' => $consent,
                 'consentAcceptance' => null,
@@ -163,5 +161,40 @@ class CmsPageDataBuilderTest extends \PHPUnit_Framework_TestCase
                 'expected' => null
             ],
         ];
+    }
+
+    public function testBuildConceptAcceptanceNotSet()
+    {
+        $fallbackValue = new LocalizedFallbackValue();
+        $consent = $this->getEntity(
+            Consent::class,
+            [
+                'id' => 1,
+                'contentNode' => $this->getEntity(
+                    ContentNode::class,
+                    [
+                        'id' => 12,
+                        'localizedUrls' => new ArrayCollection([$fallbackValue]),
+                    ]
+                )
+            ]
+        );
+        $consentAcceptanceCmsPageId = 15;
+        $cmsPage = $this->getEntity(Page::class, ['id' => $consentAcceptanceCmsPageId]);
+        $routerUrl = '/cms-page-url-from-content-acceptance';
+        $expectedResult = (new CmsPageData())
+            ->setId($consentAcceptanceCmsPageId)
+            ->setUrl($routerUrl);
+        $this->cmsPageHelper->expects($this->once())
+            ->method('getCmsPage')
+            ->with($consent, null)
+            ->willReturn($cmsPage);
+        $this->canonicalUrlGenerator->expects($this->once())
+            ->method('getAbsoluteUrl')
+            ->willReturnCallback(function (LocalizedFallbackValue $fallbackValue) use ($routerUrl) {
+                return $routerUrl;
+            });
+        $result = $this->builder->build($consent);
+        $this->assertEquals($expectedResult, $result);
     }
 }
