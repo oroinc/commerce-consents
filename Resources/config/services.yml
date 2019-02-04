@@ -437,3 +437,12 @@ services:
         class: 'Oro\Bundle\ConsentBundle\Form\Extension\FieldChoiceTypeExtension'
         tags:
             - { name: form.type_extension, extended_type: 'Oro\Bundle\QueryDesignerBundle\Form\Type\FieldChoiceType' }
+
+    oro_consent.guest_access.provider.guest_access_urls_provider:
+        class: 'Oro\Bundle\ConsentBundle\GuestAccess\Provider\GuestAccessAllowedUrlsProvider'
+        public: false
+        arguments:
+            - '@oro_consent.provider.consent_data_provider'
+            - '@oro_redirect.generator.canonical_url'
+        tags:
+            - { name: oro_frontend.guest_access_urls_provider }
