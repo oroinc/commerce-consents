@@ -446,3 +446,11 @@ services:
             - '@oro_redirect.generator.canonical_url'
         tags:
             - { name: oro_frontend.guest_access_urls_provider }
+
+    oro_consent.feature.voter.feature_voter:
+        class: 'Oro\Bundle\ConsentBundle\Feature\Voter\FeatureVoter'
+        arguments:
+            - '@oro_config.manager'
+            - '@oro_frontend.request.frontend_helper'
+        tags:
+            - { name: oro_featuretogle.voter }
