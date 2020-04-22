@@ -78,10 +78,10 @@ class CheckoutCustomerConsentsEventSubscriber implements EventSubscriberInterfac
 
         if ($customerUser instanceof CustomerUser) {
             $this->saveConsentAcceptanceHandler->save($customerUser, $consentAcceptances);
-            /**
-             * Save consents to the storage after the workflow step "Agreements"
-             * This event subscriber processes only the case when anonymous customer user proceed to the checkout.
-             */
+        /**
+         * Save consents to the storage after the workflow step "Agreements"
+         * This event subscriber processes only the case when anonymous customer user proceed to the checkout.
+         */
         } elseif ($this->isGuestCustomerUser()) {
             $this->storage->saveData($consentAcceptances);
         }
